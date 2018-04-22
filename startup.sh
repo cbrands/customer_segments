@@ -1,9 +1,16 @@
-#stop all continers
+#stop all containers
 docker kill $(docker ps -q)
 
 #remove old images
 docker system prune -f
 
-docker build -t customer-segments-app .
+rm jupyter.sh
+echo "jupyter notebook `basename $PWD`.ipynb --ip 0.0.0.0 --no-browser --allow-root" > jupyter.sh
+chmod 777 jupyter.sh
 
-docker run -it -p 8888:8888 customer-segments-app
+imagename=`basename $PWD`
+imagename+="-app"
+
+docker build -t $appname .
+
+docker run -it -p 8888:8888 -v $PWD:/opt/app $imagename
